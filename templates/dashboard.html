@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<section class="cards-grid">
+    <div class="card stat-card">
+        <div class="card-title">Total Devices</div>
+        <div class="card-value" id="stat-total">{{ total }}</div>
+    </div>
+    <div class="card stat-card stat-online">
+        <div class="card-title">Online</div>
+        <div class="card-value" id="stat-online">{{ online }}</div>
+    </div>
+    <div class="card stat-card stat-offline">
+        <div class="card-title">Offline</div>
+        <div class="card-value" id="stat-offline">{{ offline }}</div>
+    </div>
+    <div class="card stat-card stat-unknown">
+        <div class="card-title">Unknown</div>
+        <div class="card-value" id="stat-unknown">{{ unknown }}</div>
+    </div>
+</section>
+
+<section class="card table-card">
+    <div class="card-header">
+        <h2>Devices</h2>
+        <button class="btn btn-primary" id="btn-manual-scan">Manual Scan</button>
+    </div>
+    <div class="table-wrapper">
+        <table class="devices-table">
+            <thead>
+            <tr>
+                <th>IP</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Title</th>
+                <th>Last Seen</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody id="devices-body">
+            {% for d in devices %}
+                <tr class="row-status-{{ d.status }}">
+                    <td>{{ d.ip }}</td>
+                    <td>{{ d.type }}</td>
+                    <td>{{ d.status }}</td>
+                    <td>{{ d.title }}</td>
+                    <td>{{ d.last_seen or "-" }}</td>
+                    <td>
+                        <a href="http://{{ d.ip }}" target="_blank" class="btn btn-small">Web UI</a>
+                        <button class="btn btn-small btn-secondary" data-ip="{{ d.ip }}" data-action="api">
+                            API
+                        </button>
+                        <a href="{{ url_for('main.device_page', ip=d.ip) }}" class="btn btn-small btn-outline">
+                            Details
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<div class="modal-backdrop" id="modal-backdrop" hidden>
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Miner API Data</h3>
+            <button class="btn-icon" id="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <pre id="modal-content"></pre>
+        </div>
+    </div>
+</div>
+{% endblock %}

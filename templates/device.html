@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+{% block title %}Device {{ device.ip }}{% endblock %}
+
+{% block content %}
+<section class="card">
+    <div class="card-header">
+        <h2>Device {{ device.ip }}</h2>
+    </div>
+    <div class="card-body device-details">
+        <div><strong>IP:</strong> {{ device.ip }}</div>
+        <div><strong>Type:</strong> {{ device.type }}</div>
+        <div><strong>Status:</strong> {{ device.status }}</div>
+        <div><strong>Title:</strong> {{ device.title or "-" }}</div>
+        <div><strong>Created At:</strong> {{ device.created_at or "-" }}</div>
+        <div><strong>Last Seen:</strong> {{ device.last_seen or "-" }}</div>
+    </div>
+    <div class="card-footer">
+        <a href="http://{{ device.ip }}" target="_blank" class="btn btn-primary">Open Web UI</a>
+        <button class="btn btn-secondary" id="btn-load-api" data-ip="{{ device.ip }}">Load API Data</button>
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline">Back to Dashboard</a>
+    </div>
+</section>
+
+<section class="card">
+    <div class="card-header">
+        <h3>Miner API Data</h3>
+    </div>
+    <div class="card-body">
+        <pre id="device-api-content">Click "Load API Data" to fetch live stats.</pre>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const btn = document.getElementById("btn-load-api");
+    const pre = document.getElementById("device-api-content");
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+        const ip = btn.getAttribute("data-ip");
+        pre.textContent = "Loading...";
+        fetch(`/api/miner?ip=${encodeURIComponent(ip)}`)
+            .then(r => r.json())
+            .then(data => {
+                pre.textContent = JSON.stringify(data, null, 2);
+            })
+            .catch(err => {
+                pre.textContent = "Error: " + err;
+            });
+    });
+});
+</script>
+{% endblock %}
