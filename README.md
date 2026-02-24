@@ -1,61 +1,72 @@
-# HamEd Hub Monitor  
-### Enterprise‑Grade Miner Monitoring System
+# HamEd Hub Monitor
+### Enterprise‑Grade ASIC Miner Monitoring System
 
-HamEd Hub Monitor یک سیستم کامل، پایدار و مقیاس‌پذیر برای مانیتورینگ ماینرهای ASIC در شبکه‌های صنعتی است.  
+HamEd Hub Monitor یک سیستم کامل، پایدار و مقیاس‌پذیر برای مانیتورینگ ماینرهای ASIC در شبکه‌های صنعتی است.
 این پروژه برای فارم‌های واقعی طراحی شده و شامل اسکن شبکه، تشخیص نوع دستگاه، دریافت API ماینرها، داشبورد حرفه‌ای، API داخلی و سیستم لاگ‌گیری است.
 
----
+این نسخه شامل ۵ اصلاح مهم است:
 
+1. ایجاد دایرکتوری‌های لازم در زمان نصب
+2. اسکریپت نصب و حذف استاندارد و قابل‌اعتماد
+3. README حرفه‌ای و هماهنگ با ساختار پروژه
+4. عدم Listen روی 0.0.0.0 و استفاده از 127.0.0.1 برای امنیت
+5. ارائه تمام فایل‌ها با cat EOF برای جلوگیری از خطای انسانی
+
+---
 ## 🚀 Features
 
 ### 🔍 Network Scanning
-- اسکن سریع هر 10 ثانیه  
-- اسکن کامل هر 1 ساعت  
-- بدون نیاز به nmap  
-- تشخیص نوع ماینر از طریق:
-  - HTTP Server Header  
-  - HTML Title  
-- تشخیص آنلاین/آفلاین  
-- افزودن خودکار دستگاه‌های جدید  
-
-### ⚙️ Miner API (CGMiner)
-- ارتباط مستقیم TCP با پورت 4028  
-- دریافت:
-  - Hashrate (5s)
-  - Temperature
-  - Uptime  
-- مدیریت خطا، Timeout و پاسخ‌های ناقص  
-- قابل توسعه برای مدل‌های جدید ماینر  
-
-### 🗂 Data Storage
-- ذخیره دستگاه‌ها در `devices.json`  
-- لاگ‌گیری کامل در `hamed_hub.log`  
-- Thread‑safe  
-
-### 🌐 Internal REST API
-| Endpoint | Description |
-|---------|-------------|
-| `GET /devices` | لیست کامل دستگاه‌ها |
-| `GET /api/miner?ip=` | دریافت API ماینر |
-| `GET /scan` | اسکن دستی |
-| `GET /export` | خروجی کامل JSON |
-| `GET /health` | وضعیت سرویس |
-
-### 🖥 Enterprise UI
-- داشبورد مدرن و واکنش‌گرا  
-- تم تاریک  
-- جدول دستگاه‌ها با رنگ وضعیت  
-- آپدیت زنده هر 5 ثانیه  
-- Modal برای نمایش API  
-- صفحهٔ جزئیات دستگاه  
+- اسکن سریع هر 10 ثانیه
+- اسکن کامل هر 1 ساعت
+- بدون نیاز به nmap
+- تشخیص نوع ماینر از طریق HTTP Header و HTML Title
+- تشخیص آنلاین/آفلاین
+- افزودن خودکار دستگاه‌های جدید
 
 ---
 
-## 📦 Project Structure
+### ⚙️ Miner API (CGMiner)
+- ارتباط مستقیم TCP با پورت 4028
+- دریافت Hashrate، Temperature، Uptime
+- مدیریت Timeout و خطا
+- قابل توسعه برای مدل‌های جدید ماینر
 
-hamed_hub_monitor/
+---
+
+### 🗂 Data Storage
+- ذخیره دستگاه‌ها در devices.json
+- لاگ‌گیری کامل در logs/
+- Thread‑safe
+- ساختار JSON تمیز و قابل توسعه
+
+---
+### 🌐 Internal REST API
+
+| Endpoint | Description |
+|---------|-------------|
+| GET /devices | لیست کامل دستگاه‌ها |
+| GET /api/miner?ip= | دریافت API ماینر |
+| GET /scan | اسکن دستی |
+| GET /export | خروجی کامل JSON |
+| GET /health | وضعیت سرویس |
+
+---
+
+## 🖥 Enterprise‑Grade UI
+
+- داشبورد مدرن و واکنش‌گرا
+- تم تاریک
+- جدول وضعیت با رنگ‌بندی
+- آپدیت زنده هر 5 ثانیه
+- Modal نمایش API
+- صفحهٔ جزئیات دستگاه
+
+---
+# 📁 Project Structure
+
+HamEd_Hub_Monitor_1/
 ├── app/
-│   ├── init.py
+│   ├── __init__.py
 │   ├── routes.py
 │   ├── scanner.py
 │   ├── miner_api.py
@@ -69,53 +80,57 @@ hamed_hub_monitor/
 ├── static/
 │   ├── css/style.css
 │   └── js/main.js
+├── logs/
+│   └── .gitkeep
 ├── config.py
 ├── requirements.txt
 ├── run.py
+├── install.sh
+├── uninstall.sh
 ├── devices.json
-└── hamed_hub.log
+└── hamed_hub.log (runtime)
+
+---
+# 🔐 Security Notes
+
+- Flask فقط روی 127.0.0.1:8000 اجرا می‌شود
+- Gunicorn نیز فقط روی localhost اجرا می‌شود
+- دسترسی خارجی فقط از طریق Reverse Proxy یا SSH Tunnel یا VPN
 
 ---
 
-## 🛠 Installation
+# 🛠 Installation (Auto Installer)
 
-### 1) Clone & Setup
-```bash
-git clone https://github.com/hamed/hub-monitor.git
-cd hub-monitor
+sudo bash install.sh
+
+---
+
+# 🧹 Uninstall
+
+sudo bash uninstall.sh
+
+---
+
+# 🧩 Development Mode
+
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+python run.py
 
-2) Run Development Server
-sudo python run.py
-3) Run Production (Gunicorn)
-gunicorn -w 4 -b 0.0.0.0:8000 run:app
+---
 
-Network Requirements
+# 📌 File Creation Standard (Important)
 
-    Network: 172.16.1.0/24
+تمام فایل‌ها باید با این روش ساخته شوند:
 
-    Server IP: 172.16.1.105
+cat << 'EOF' > filename
+...content...
+EOF
 
-    Ports:
+---
 
-        HTTP: 80
+# 📝 License
 
-        CGMiner API: 4028
-Extendability
-
-HamEd Hub Monitor طوری طراحی شده که بتوانید:
-
-    مدل‌های جدید ماینر اضافه کنید
-
-    UI را گسترش دهید
-
-    APIهای جدید اضافه کنید
-
-    اسکنر را برای شبکه‌های بزرگ‌تر تنظیم کنید
-
-📝 License
-
-Private / Commercial Use Only
-
+Private / Commercial Use Only  
+All rights reserved.
